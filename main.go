@@ -125,10 +125,6 @@ func handlerPost(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "Post received: %s\n", p.Message)
 
-	id := uuid.New()
-	// Save to ES.
-	saveToES(&p, id)
-
 }
 
 func saveToGCS(ctx context.Context, r io.Reader, bucketName, name string) (*storage.ObjectHandle, *storage.ObjectAttrs, error) {
