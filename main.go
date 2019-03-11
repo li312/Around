@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cloud.google.com/go/bigtable"
+	//"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/storage"
 	"context"
 	"encoding/json"
@@ -35,7 +35,7 @@ const (
 	INDEX       = "around"
 	TYPE        = "post"
 	DISTANCE    = "200km"
-	ES_URL      = "http://35.238.33.13:9200"
+	ES_URL      = "http://35.222.22.147:9200"
 	BUCKET_NAME = "post-images-206915"
 	PROJECT_ID  = "around-206915"
 	BT_INSTANCE = "around-post"
@@ -149,7 +149,7 @@ func handlerPost(w http.ResponseWriter, r *http.Request) {
 	saveToES(p, id)
 
 	// Save to Bigtable
-	saveToBigTable(p, id)
+	//saveToBigTable(p, id)
 
 }
 
@@ -211,32 +211,32 @@ func saveToES(p *Post, id string) {
 
 }
 
-func saveToBigTable(p *Post, id string) {
-	ctx := context.Background()
-	// you must update project name here
-	bt_client, err := bigtable.NewClient(ctx, PROJECT_ID, BT_INSTANCE)
-	if err != nil {
-		panic(err)
-		return
-	}
+// func saveToBigTable(p *Post, id string) {
+// 	ctx := context.Background()
+// 	// you must update project name here
+// 	bt_client, err := bigtable.NewClient(ctx, PROJECT_ID, BT_INSTANCE)
+// 	if err != nil {
+// 		panic(err)
+// 		return
+// 	}
 
-	tbl := bt_client.Open("post")
-	mut := bigtable.NewMutation()
-	t := bigtable.Now()
+// 	tbl := bt_client.Open("post")
+// 	mut := bigtable.NewMutation()
+// 	t := bigtable.Now()
 
-	mut.Set("post", "user", t, []byte(p.User))
-	mut.Set("post", "message", t, []byte(p.Message))
-	mut.Set("location", "lat", t, []byte(strconv.FormatFloat(p.Location.Lat, 'f', -1, 64)))
-	mut.Set("location", "lon", t, []byte(strconv.FormatFloat(p.Location.Lon, 'f', -1, 64)))
+// 	mut.Set("post", "user", t, []byte(p.User))
+// 	mut.Set("post", "message", t, []byte(p.Message))
+// 	mut.Set("location", "lat", t, []byte(strconv.FormatFloat(p.Location.Lat, 'f', -1, 64)))
+// 	mut.Set("location", "lon", t, []byte(strconv.FormatFloat(p.Location.Lon, 'f', -1, 64)))
 
-	err = tbl.Apply(ctx, id, mut)
-	if err != nil {
-		panic(err)
-		return
-	}
-	fmt.Printf("Post is saved to BigTable: %s\n", p.Message)
+// 	err = tbl.Apply(ctx, id, mut)
+// 	if err != nil {
+// 		panic(err)
+// 		return
+// 	}
+// 	fmt.Printf("Post is saved to BigTable: %s\n", p.Message)
 
-}
+// }
 
 func handlerSearch(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Recieved one request for search.")
